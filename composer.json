@@ -1,0 +1,59 @@
+{
+    "name": "widiu7omo/filament-bandel",
+    "description": "Banned Model with Filament Bandel",
+    "keywords": [
+        "widiu7omo",
+        "laravel",
+        "filament-bandel"
+    ],
+    "homepage": "https://github.com/widiu7omo/filament-bandel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Danar Widi",
+            "email": "widiu7omo@gmail.com",
+            "role": "Creator"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "cybercog/laravel-ban": "^4.8",
+        "illuminate/contracts": "^10.6",
+        "spatie/laravel-package-tools": "^1.14"
+    },
+    "autoload": {
+        "psr-4": {
+            "Widiu7omo\\FilamentBandel\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Widiu7omo\\FilamentBandel\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Widiu7omo\\FilamentBandel\\FilamentBandelServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "nunomaduro/collision": "^7.4",
+        "pestphp/pest": "^2.4",
+        "pestphp/pest-plugin-laravel": "^2.0"
+    }
+}
