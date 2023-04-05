@@ -1,5 +1,7 @@
 # Laravel Filament Bandel
 
+This code forked from - [Truong Thanh Tung Filament Ban](https://github.com/ttungbmt/filament-ban.git)
+
 ## Introduction
 
 We are using [laravel-ban by cybercog](https://github.com/cybercog/laravel-ban) on the background.
@@ -101,6 +103,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 ## Credits
 
 - [Danar Widi](https://github.com/widiu7omo)
+- [Truong Thanh Tung](https://github.com/ttungbmt)
 - [All Contributors](../../contributors)
 
 ## License
