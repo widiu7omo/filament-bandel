@@ -5,7 +5,7 @@
 Changelog
 
 - Fix typo [en] translation
-- Add Arabic translation 
+- Add Arabic translation. Thanks to @mohamedsabil83
 
 ## 1.0.1
 
