@@ -9,6 +9,10 @@ We are using [laravel-ban by cybercog](https://github.com/cybercog/laravel-ban) 
 ![single_ban_user](./screenshots/single.png)
 ![bulk_ban_user](./screenshots/bulk.png)
 
+## Requirement
+- Laravel 10
+- FilamentPHP
+
 ## Installation
 
 You can install the package via composer:
