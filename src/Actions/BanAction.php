@@ -2,35 +2,46 @@
 
 namespace Widiu7omo\FilamentBandel\Actions;
 
-use Closure;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
-use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Actions\Concerns\CanCustomizeProcess;
+use Filament\Tables\Table;
 
 class BanAction extends Action
 {
-    protected string|Closure|null $icon = "heroicon-o-lock-closed";
+    use CanCustomizeProcess;
 
-    public static function make(?string $name = 'banned'): static
+    public static function getDefaultName(): ?string
     {
-        return parent::make($name);
+        return 'banned';
     }
 
     protected function setUp(): void
     {
-        $this->modalWidth = 'sm';
-        $this->action($this->handle(...));
-    }
+        parent::setUp();
 
-    protected function handle(Model $record, array $data)
-    {
-        $record->ban([
-            'comment' => $data['comment'],
-            'expired_at' => $data['expired_at'],
-        ]);
-        Notification::make('banned-single-record')->success()->title(trans('filament-bandel::translations.single-ban-success'))->send();
+        $this->successNotificationTitle(__('filament-bandel::translations.single-ban-success'));
+
+        $this->color('primary');
+
+        $this->icon('heroicon-o-lock-closed');
+
+        $this->form(function (Model $record){
+            return $this->getFormSchema();
+        });
+
+        $this->action(function (): void {
+            $this->process(function (array $data, Model $record, Table $table) {
+                $record->ban([
+                    'comment' => $data['comment'],
+                    'expired_at' => $data['expired_at'],
+                ]);
+            });
+
+            $this->success();
+        });
     }
 
     public function getFormSchema(): array

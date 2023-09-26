@@ -2,28 +2,36 @@
 
 namespace Widiu7omo\FilamentBandel\Actions;
 
-use Closure;
-use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Actions\Concerns\CanCustomizeProcess;
+use Filament\Tables\Table;
 
 class UnbanAction extends Action
 {
-    protected string|Closure|null $icon = "heroicon-o-lock-open";
+    use CanCustomizeProcess;
 
-    public static function make(?string $name = 'unbanned'): static
+    public static function getDefaultName(): ?string
     {
-        return parent::make($name);
+        return 'unbanned';
     }
 
     protected function setUp(): void
     {
-        $this->action($this->handle(...));
-    }
+        parent::setUp();
 
-    protected function handle(Model $record, array $data): void
-    {
-        $record->unban();
-        Notification::make('unbanned-single-record')->success()->title(trans('filament-bandel::translations.single-unban-success'))->send();
+        $this->successNotificationTitle(__('filament-bandel::translations.single-unban-success'));
+
+        $this->color('primary');
+
+        $this->icon('heroicon-o-lock-open');
+
+        $this->action(function (): void {
+            $this->process(function (array $data, Model $record, Table $table) {
+                $record->unban();
+            });
+
+            $this->success();
+        });
     }
 }
