@@ -15,7 +15,6 @@ class UnbanBulkAction extends BulkAction
         return 'unban_bulk';
     }
 
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,7 +28,7 @@ class UnbanBulkAction extends BulkAction
         $this->icon('heroicon-o-lock-closed');
 
         $this->action(function () {
-            $this->process(function (array $data, Collection $records) {
+            $this->process(function (Collection $records) {
                 $records->filter(fn ($r) => $r->banned_at)->each->unban();
             });
 

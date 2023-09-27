@@ -5,7 +5,6 @@ namespace Widiu7omo\FilamentBandel\Actions;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Actions\Concerns\CanCustomizeProcess;
-use Filament\Tables\Table;
 
 class UnbanAction extends Action
 {
@@ -27,7 +26,7 @@ class UnbanAction extends Action
         $this->icon('heroicon-o-lock-open');
 
         $this->action(function (): void {
-            $this->process(function (array $data, Model $record, Table $table) {
+            $this->process(function (Model $record) {
                 $record->unban();
             });
 

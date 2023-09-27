@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Actions\Concerns\CanCustomizeProcess;
 
-
 class BanBulkAction extends BulkAction
 {
     use CanCustomizeProcess;
