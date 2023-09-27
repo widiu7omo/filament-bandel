@@ -13,7 +13,7 @@ class UnbanAction extends Action
 
     public static function getDefaultName(): ?string
     {
-        return 'unbanned';
+        return 'unban';
     }
 
     protected function setUp(): void

@@ -2,25 +2,40 @@
 
 namespace Widiu7omo\FilamentBandel\Actions;
 
-use Filament\Notifications\Notification;
+use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Tables\Actions\BulkAction;
-use Closure;
 use Illuminate\Database\Eloquent\Collection;
 
 class UnbanBulkAction extends BulkAction
 {
-    protected bool|Closure $shouldDeselectRecordsAfterCompletion = true;
+    use CanCustomizeProcess;
 
-    protected string|Closure|null $icon = 'heroicon-o-lock-open';
+    public static function getDefaultName(): ?string
+    {
+        return 'unban_bulk';
+    }
+
 
     protected function setUp(): void
     {
-        $this->action($this->handle(...));
-    }
+        parent::setUp();
 
-    protected function handle(Collection $records, array $data): void
-    {
-        $records->each->unban();
-        Notification::make('unbanned_models')->success()->title(trans('filament-bandel::translations.bulk-unban-success'))->send();
+        $this->label(__('filament-bandel::translations.bulk-unban'));
+
+        $this->successNotificationTitle(__('filament-bandel::translations.bulk-unban-success'));
+
+        $this->color('primary');
+
+        $this->icon('heroicon-o-lock-closed');
+
+        $this->action(function () {
+            $this->process(function (array $data, Collection $records) {
+                $records->filter(fn ($r) => $r->banned_at)->each->unban();
+            });
+
+            $this->success();
+        });
+
+        $this->deselectRecordsAfterCompletion();
     }
 }
