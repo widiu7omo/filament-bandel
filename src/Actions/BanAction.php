@@ -15,7 +15,7 @@ class BanAction extends Action
 
     public static function getDefaultName(): ?string
     {
-        return 'banned';
+        return 'ban';
     }
 
     protected function setUp(): void
