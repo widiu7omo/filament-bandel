@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'ban' => 'Blokir',
+    'unban' => 'Buka Blokir',
+    'comment' => 'Komentar',
+    'expires_at' => 'Berlaku Hingga',
     'ban_model' => 'Blokir Model',
     'unban_model' => 'Buka Model',
     'single-ban-success' => 'Model berhasil diblokir aksesnya',
