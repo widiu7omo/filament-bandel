@@ -48,17 +48,11 @@ jobs:
             laravel: "13.*"
             testbench: "^11.0"
             stability: "prefer-stable"
-          # Lowest-dependency legs
-          - php: "8.2"
-            filament: "^3.2"
-            laravel: "11.*"
-            testbench: "^9.0"
-            stability: "prefer-lowest"
-          - php: "8.2"
-            filament: "^4.0"
-            laravel: "11.*"
-            testbench: "^9.0"
-            stability: "prefer-lowest"
+
+    # No prefer-lowest legs: minimum-pinned cross-dependency combos in this
+    # ecosystem resolve to mutually incompatible releases (e.g. testbench-core
+    # 9.0.0 expects framework patches missing from 11.0.0), so they do not
+    # reflect any real install.
 
     name: >-
       PHP ${{ matrix.php }} /
