@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'ban' => 'حظر',
+    'unban' => 'إلغاء الحظر',
+    'comment' => 'تعليق',
+    'expires_at' => 'ينتهي في',
     'ban_model' => 'تم الحظر',
     'unban_model' => 'تم الغاء الحظر',
     'single-ban-success' => 'تم الحظر!',

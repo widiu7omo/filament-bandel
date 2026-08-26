@@ -2,35 +2,53 @@
 
 namespace Widiu7omo\FilamentBandel\Actions;
 
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
+use Filament\Tables\Actions\Action as TableAction;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Actions\Concerns\CanCustomizeProcess;
+use Widiu7omo\FilamentBandel\Support\FilamentVersion;
 
-class UnbanAction extends Action
+/**
+ * Unban a single record.
+ *
+ * @see BanAction for the multi-version composition rationale.
+ */
+final class UnbanAction
 {
-    use CanCustomizeProcess;
-
-    public static function getDefaultName(): ?string
+    public static function getDefaultName(): string
     {
         return 'unban';
     }
 
-    protected function setUp(): void
+    /**
+     * @return Action|TableAction
+     */
+    public static function make()
     {
-        parent::setUp();
-
-        $this->successNotificationTitle(__('filament-bandel::translations.single-unban-success'));
-
-        $this->color('primary');
-
-        $this->icon('heroicon-o-lock-open');
-
-        $this->action(function (): void {
-            $this->process(function (Model $record) {
-                $record->unban();
+        $action = self::baseAction()
+            ->label(__('filament-bandel::translations.unban'))
+            ->color('primary')
+            ->icon('heroicon-o-lock-open')
+            ->successNotificationTitle(__('filament-bandel::translations.single-unban-success'))
+            ->action(function (Model $record): void {
+                self::execute($record);
             });
 
-            $this->success();
-        });
+        /** @var Action|TableAction $action */
+        return $action;
+    }
+
+    public static function execute(Model $record): void
+    {
+        $record->unban();
+    }
+
+    /**
+     * @return Action|TableAction
+     */
+    private static function baseAction()
+    {
+        $actionClass = FilamentVersion::isV3() ? TableAction::class : Action::class;
+
+        return $actionClass::make(self::getDefaultName());
     }
 }

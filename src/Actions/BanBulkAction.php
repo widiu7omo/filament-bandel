@@ -2,54 +2,67 @@
 
 namespace Widiu7omo\FilamentBandel\Actions;
 
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Actions\BulkAction;
+use Filament\Actions\BulkAction;
+use Filament\Tables\Actions\BulkAction as TableBulkAction;
 use Illuminate\Database\Eloquent\Collection;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Actions\Concerns\CanCustomizeProcess;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Widiu7omo\FilamentBandel\Forms\BanForm;
+use Widiu7omo\FilamentBandel\Support\BanState;
+use Widiu7omo\FilamentBandel\Support\BulkRecords;
+use Widiu7omo\FilamentBandel\Support\FilamentVersion;
 
-class BanBulkAction extends BulkAction
+/**
+ * Ban multiple records at once.
+ *
+ * @see BanAction for the multi-version composition rationale.
+ */
+final class BanBulkAction
 {
-    use CanCustomizeProcess;
-
-    public static function getDefaultName(): ?string
+    public static function getDefaultName(): string
     {
         return 'ban_bulk';
     }
 
-    protected function setUp(): void
+    /**
+     * @return BulkAction|TableBulkAction
+     */
+    public static function make()
     {
-        parent::setUp();
+        $action = self::baseAction()
+            ->label(__('filament-bandel::translations.bulk-ban'))
+            ->color('primary')
+            ->icon('heroicon-o-lock-closed')
+            ->form(fn (): array => BanForm::schema())
+            ->successNotificationTitle(__('filament-bandel::translations.bulk-ban-success'))
+            ->action(function (array $data, Collection $records): void {
+                self::execute($records, $data);
+            })
+            ->deselectRecordsAfterCompletion();
 
-        $this->label(__('filament-bandel::translations.bulk-ban'));
-
-        $this->successNotificationTitle(__('filament-bandel::translations.bulk-ban-success'));
-
-        $this->color('primary');
-
-        $this->icon('heroicon-o-lock-closed');
-
-        $this->form(fn () => $this->getFormSchema());
-
-        $this->action(function () {
-            $this->process(function (array $data, Collection $records) {
-                $records->filter(fn ($r) => !$r->banned_at)->each->ban([
-                    'comment' => $data['comment'],
-                    'expired_at' => $data['expired_at'],
-                ]);
-            });
-
-            $this->success();
-        });
-
-        $this->deselectRecordsAfterCompletion();
+        /** @var BulkAction|TableBulkAction $action */
+        return $action;
     }
 
-   public function getFormSchema(): array
-   {
-       return [
-           Textarea::make('comment')->rows(4),
-           DateTimePicker::make('expired_at')->label(__('Expires At')),
-       ];
-   }
+    public static function execute(Collection $records, array $data): void
+    {
+        DB::transaction(function () use ($records, $data): void {
+            BulkRecords::fresh($records)
+                ->filter(fn (Model $record) => ! BanState::isBanned($record))
+                ->each(fn (Model $record) => $record->ban([
+                    'comment' => $data['comment'] ?? null,
+                    'expired_at' => $data['expired_at'] ?? null,
+                ]));
+        });
+    }
+
+    /**
+     * @return BulkAction|TableBulkAction
+     */
+    private static function baseAction()
+    {
+        $bulkClass = FilamentVersion::isV3() ? TableBulkAction::class : BulkAction::class;
+
+        return $bulkClass::make(self::getDefaultName());
+    }
 }

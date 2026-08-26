@@ -4,7 +4,6 @@ namespace Widiu7omo\FilamentBandel;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Widiu7omo\FilamentBandel\Commands\FilamentBanCommand;
 
 class FilamentBandelServiceProvider extends PackageServiceProvider
 {

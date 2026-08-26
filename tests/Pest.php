@@ -1,5 +1,5 @@
 <?php
 
-use FilamentPro\FilamentBan\Tests\TestCase;
+use Widiu7omo\FilamentBandel\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

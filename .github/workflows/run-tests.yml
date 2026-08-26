@@ -1,36 +1,64 @@
+---
 name: run-tests
 
-on:
+"on":
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        php: [8.0, 8.1, '8.2', '8.3', '8.4']
-        laravel: ['9.*', '12.*']
-        stability: [prefer-lowest, prefer-stable]
         include:
-          - laravel: 9.*
-            testbench: 7.*
-          - laravel: 12.*
-            testbench: 10.*
-        exclude:
-          - laravel: 12.*
-            php: 8.0
-          - laravel: 12.*
-            php: 8.1
+          # Filament 3 — Laravel 11 only
+          - php: "8.2"
+            filament: "^3.2"
+            laravel: "11.*"
+            testbench: "^9.0"
+            stability: "prefer-stable"
+          - php: "8.4"
+            filament: "^3.2"
+            laravel: "11.*"
+            testbench: "^9.0"
+            stability: "prefer-stable"
+          # Filament 4 — Laravel 11 / 12
+          - php: "8.2"
+            filament: "^4.0"
+            laravel: "11.*"
+            testbench: "^9.0"
+            stability: "prefer-stable"
+          - php: "8.4"
+            filament: "^4.0"
+            laravel: "12.*"
+            testbench: "^10.0"
+            stability: "prefer-stable"
+          # Filament 5 — Laravel 12 / 13
+          - php: "8.3"
+            filament: "^5.0"
+            laravel: "12.*"
+            testbench: "^10.0"
+            stability: "prefer-stable"
+          - php: "8.5"
+            filament: "^5.0"
+            laravel: "13.*"
+            testbench: "^11.0"
+            stability: "prefer-stable"
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    # No prefer-lowest legs: minimum-pinned cross-dependency combos in this
+    # ecosystem resolve to mutually incompatible releases (e.g. testbench-core
+    # 9.0.0 expects framework patches missing from 11.0.0), so they do not
+    # reflect any real install.
+
+    name: >-
+      PHP ${{ matrix.php }} /
+      ${{ matrix.filament }} /
+      L${{ matrix.laravel }} /
+      ${{ matrix.stability }}
 
     steps:
       - name: Checkout code
@@ -40,7 +68,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          extensions: dom, curl, libxml, mbstring, zip, pcntl,
+            pdo, sqlite, pdo_sqlite, bcmath, intl, fileinfo
           coverage: none
 
       - name: Setup problem matchers
@@ -50,8 +79,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-          composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+          composer require "filament/filament:${{ matrix.filament }}" \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            --no-interaction --no-update
+          composer update --${{ matrix.stability }} --prefer-dist \
+            --no-interaction
 
       - name: Execute tests
         run: vendor/bin/pest

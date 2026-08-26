@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'ban' => 'Banir',
+    'unban' => 'Desbanir',
+    'comment' => 'Comentário',
+    'expires_at' => 'Expira em',
     'ban_model' => 'Banir Registros',
     'unban_model' => 'Desbanir Registros',
     'single-ban-success' => 'Registro banido com sucesso!',

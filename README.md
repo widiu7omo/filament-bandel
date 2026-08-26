@@ -10,8 +10,10 @@ We are using [laravel-ban by cybercog](https://github.com/cybercog/laravel-ban) 
 ![bulk_ban_user](./screenshots/bulk.png)
 
 ## Requirement
-- Laravel 10
-- FilamentPHP
+
+- PHP 8.2+
+- Laravel 11.8+ / 12 / 13
+- Filament 3 / 4 / 5 (detected automatically at runtime)
 
 ## Installation
 
@@ -28,17 +30,15 @@ php artisan vendor:publish --tag="filament-bandel-migrations"
 php artisan migrate
 ```
 
-ou can publish and run the translations with:
+You can publish and run the translations with:
 
 ```bash
 php artisan vendor:publish --tag="filament-bandel-translations"
-
 ```
 
 You can publish the config file from cybercog/laravel-ban with:
 
 ```bash
-
 php artisan vendor:publish --tag="ban-config"
 ```
 
@@ -64,6 +64,22 @@ user was banned. If you are trying to make default Laravel User model to be bann
 
 Register `BanAction` and `UnbanAction` actions inside your Model's Resource.
 
+**Filament 4 / 5:**
+
+```php
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->recordActions([
+//                ...rest,
+                \Widiu7omo\FilamentBandel\Actions\BanAction::make(),
+                \Widiu7omo\FilamentBandel\Actions\UnbanAction::make()
+            ]);
+    }
+```
+
+**Filament 3:**
+
 ```php
     public static function table(Table $table): Table
     {
@@ -80,14 +96,30 @@ Register `BanAction` and `UnbanAction` actions inside your Model's Resource.
 
 Register `BanBulkAction` and `UnbanBulkAction` actions inside your Model's Resource.
 
+**Filament 4 / 5** (bulk actions live in the toolbar):
+
+```php
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->toolbarActions([
+//            ...rest
+                \Widiu7omo\FilamentBandel\Actions\BanBulkAction::make(),
+                \Widiu7omo\FilamentBandel\Actions\UnbanBulkAction::make(),
+            ]);
+    }
+```
+
+**Filament 3:**
+
 ```php
     public static function table(Table $table): Table
     {
         return $table
             ->prependBulkActions([
 //            ...rest
-                \Widiu7omo\FilamentBandel\Actions\BanBulkAction::make('banned_model'),
-                \Widiu7omo\FilamentBandel\Actions\UnbanBulkAction::make('unbanned_model'),
+                \Widiu7omo\FilamentBandel\Actions\BanBulkAction::make(),
+                \Widiu7omo\FilamentBandel\Actions\UnbanBulkAction::make(),
             ]);
     }
 ```

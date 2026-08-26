@@ -2,39 +2,62 @@
 
 namespace Widiu7omo\FilamentBandel\Actions;
 
-use Filament\Actions\Concerns\CanCustomizeProcess;
-use Filament\Tables\Actions\BulkAction;
+use Filament\Actions\BulkAction;
+use Filament\Tables\Actions\BulkAction as TableBulkAction;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Widiu7omo\FilamentBandel\Support\BanState;
+use Widiu7omo\FilamentBandel\Support\BulkRecords;
+use Widiu7omo\FilamentBandel\Support\FilamentVersion;
 
-class UnbanBulkAction extends BulkAction
+/**
+ * Unban multiple records at once.
+ *
+ * @see BanAction for the multi-version composition rationale.
+ */
+final class UnbanBulkAction
 {
-    use CanCustomizeProcess;
-
-    public static function getDefaultName(): ?string
+    public static function getDefaultName(): string
     {
         return 'unban_bulk';
     }
 
-    protected function setUp(): void
+    /**
+     * @return BulkAction|TableBulkAction
+     */
+    public static function make()
     {
-        parent::setUp();
+        $action = self::baseAction()
+            ->label(__('filament-bandel::translations.bulk-unban'))
+            ->color('primary')
+            ->icon('heroicon-o-lock-open')
+            ->successNotificationTitle(__('filament-bandel::translations.bulk-unban-success'))
+            ->action(function (Collection $records): void {
+                self::execute($records);
+            })
+            ->deselectRecordsAfterCompletion();
 
-        $this->label(__('filament-bandel::translations.bulk-unban'));
+        /** @var BulkAction|TableBulkAction $action */
+        return $action;
+    }
 
-        $this->successNotificationTitle(__('filament-bandel::translations.bulk-unban-success'));
-
-        $this->color('primary');
-
-        $this->icon('heroicon-o-lock-closed');
-
-        $this->action(function () {
-            $this->process(function (Collection $records) {
-                $records->filter(fn ($r) => $r->banned_at)->each->unban();
-            });
-
-            $this->success();
+    public static function execute(Collection $records): void
+    {
+        DB::transaction(function () use ($records): void {
+            BulkRecords::fresh($records)
+                ->filter(fn (Model $record) => BanState::isBanned($record))
+                ->each(fn (Model $record) => $record->unban());
         });
+    }
 
-        $this->deselectRecordsAfterCompletion();
+    /**
+     * @return BulkAction|TableBulkAction
+     */
+    private static function baseAction()
+    {
+        $bulkClass = FilamentVersion::isV3() ? TableBulkAction::class : BulkAction::class;
+
+        return $bulkClass::make(self::getDefaultName());
     }
 }
