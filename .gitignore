@@ -13,3 +13,6 @@ node_modules
 .php-cs-fixer.cache
 laravel
 .DS_Store
+
+# Local integration test app
+/test-filament
